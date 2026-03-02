@@ -62,10 +62,16 @@ const handleSubmit = async (e: Event) => {
     consumedMaterials: consumedMaterials.value,
     note: note.value || undefined,
   }
-  await store.executeProduction(execBody)
-  selectedProductId.value = 0
-  quantity.value = 0
-  note.value = ''
+  
+  try {
+    await store.executeProduction(execBody)
+    selectedProductId.value = 0
+    quantity.value = 0
+    note.value = ''
+    alert('Production executed successfully!')
+  } catch (error: any) {
+    alert(error.message || 'Failed to execute production')
+  }
 }
 </script>
 

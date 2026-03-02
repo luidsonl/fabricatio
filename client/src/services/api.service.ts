@@ -22,11 +22,29 @@ const fetchBase = async <T>(endpoint: string, options?: RequestInit): Promise<T>
     // In test environment, the backend might return 201 Created without body or empty body, 
     // fetch.json() on empty string throws error. So handle text processing.
     if (!response.ok) {
-        throw new Error(`API Error: ${response.statusText}`);
+        let errMessage = `API Error: ${response.status} ${response.statusText}`;
+        try {
+            const errText = await response.text();
+            if (errText) {
+                try {
+                    const errJson = JSON.parse(errText);
+                    errMessage = errJson.message || errJson.error || JSON.stringify(errJson);
+                } catch {
+                    errMessage = errText;
+                }
+            }
+        } catch (e) {
+            // Ignore text reading errors
+        }
+        throw new Error(errMessage);
     }
     const text = await response.text();
     if (!text) return {} as T;
-    return JSON.parse(text) as T;
+    try {
+        return JSON.parse(text) as T;
+    } catch (e) {
+        return text as unknown as T;
+    }
 };
 
 export const apiService = {

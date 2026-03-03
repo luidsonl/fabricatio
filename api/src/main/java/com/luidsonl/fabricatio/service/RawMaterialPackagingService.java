@@ -76,6 +76,7 @@ public class RawMaterialPackagingService {
                 .id(entity.getId())
                 .name(entity.getName())
                 .rawMaterialId(entity.getRawMaterial() != null ? entity.getRawMaterial().getId() : null)
+                .rawMaterialName(entity.getRawMaterial() != null ? entity.getRawMaterial().getName() : null)
                 .quantityInside(entity.getQuantityInside())
                 .currentStock(entity.getCurrentStock())
                 .build();

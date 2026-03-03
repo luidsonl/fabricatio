@@ -13,6 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -27,81 +28,83 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductionController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ProductionControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockitoBean
-    private ProductionService productionService;
+        @MockitoBean
+        private ProductionService productionService;
 
-    @Test
-    @DisplayName("Should return production suggestions with items and totals")
-    void testSuggest() throws Exception {
-        SuggestedProductDTO item = new SuggestedProductDTO(1L, "Test Product", new BigDecimal("10.0"),
-                new BigDecimal("50.0"), new BigDecimal("500.0"));
-        ProductionSuggestionDTO dto = new ProductionSuggestionDTO(Collections.singletonList(item),
-                new BigDecimal("500.0"));
+        @Test
+        @DisplayName("Should return production suggestions with items and totals")
+        void testSuggest() throws Exception {
+                SuggestedProductDTO item = new SuggestedProductDTO(1L, "Test Product", new BigDecimal("10.0"),
+                                new BigDecimal("50.0"), new BigDecimal("500.0"));
+                ProductionSuggestionDTO dto = new ProductionSuggestionDTO(Collections.singletonList(item),
+                                new BigDecimal("500.0"));
 
-        when(productionService.getProductionSuggestion()).thenReturn(dto);
+                when(productionService.getProductionSuggestion()).thenReturn(dto);
 
-        mockMvc.perform(get("/api/production/suggest"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        {
-                            "products": [
-                                {
-                                    "productName": "Test Product",
-                                    "quantityToProduce": 10.0
-                                }
-                            ],
-                            "grandTotalValue": 500.0
-                        }
-                        """));
+                mockMvc.perform(get("/api/production/suggest"))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json("""
+                                                {
+                                                    "products": [
+                                                        {
+                                                            "productName": "Test Product",
+                                                            "quantityToProduce": 10.0
+                                                        }
+                                                    ],
+                                                    "grandTotalValue": 500.0
+                                                }
+                                                """));
 
-        verify(productionService).getProductionSuggestion();
-    }
+                verify(productionService).getProductionSuggestion();
+        }
 
-    @Test
-    @DisplayName("Should return requirements for a product")
-    void testGetRequirements() throws Exception {
-        MaterialRequirementDTO dto = MaterialRequirementDTO.builder()
-                .productId(1L)
-                .productName("Test Product")
-                .productionQuantity(new BigDecimal("5.0"))
-                .materials(List.of(
-                        MaterialRequirementDTO.MaterialItemDTO.builder()
-                                .rawMaterialId(2L)
-                                .rawMaterialName("Sugar")
-                                .totalNeededQuantity(new BigDecimal("2.5"))
-                                .unit("KILOGRAM")
-                                .build()))
-                .build();
+        @Test
+        @DisplayName("Should return requirements for a product")
+        void testGetRequirements() throws Exception {
+                MaterialRequirementDTO dto = MaterialRequirementDTO.builder()
+                                .productId(1L)
+                                .productName("Test Product")
+                                .productionQuantity(new BigDecimal("5.0"))
+                                .materials(List.of(
+                                                MaterialRequirementDTO.MaterialItemDTO.builder()
+                                                                .rawMaterialId(2L)
+                                                                .rawMaterialName("Sugar")
+                                                                .totalNeededQuantity(new BigDecimal("2.5"))
+                                                                .unit("KILOGRAM")
+                                                                .build()))
+                                .build();
 
-        when(productionService.calculateRequirements(eq(1L), any(BigDecimal.class))).thenReturn(dto);
+                when(productionService.calculateRequirements(eq(1L), any(BigDecimal.class))).thenReturn(dto);
 
-        mockMvc.perform(get("/api/production/requirements")
-                .param("productId", "1")
-                .param("quantity", "5.0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.productName").value("Test Product"))
-                .andExpect(jsonPath("$.materials[0].rawMaterialName").value("Sugar"));
-    }
+                mockMvc.perform(get("/api/production/requirements")
+                                .param("productId", "1")
+                                .param("quantity", "5.0"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.productName").value("Test Product"))
+                                .andExpect(jsonPath("$.materials[0].rawMaterialName").value("Sugar"));
+        }
 
-    @Test
-    @DisplayName("Should execute production")
-    void testExecute() throws Exception {
-        ProductionExecutionDTO execution = ProductionExecutionDTO.builder()
-                .note("Test production")
-                .producedProducts(List.of(new ProductionExecutionDTO.ProducedProductInputDTO(1L, new BigDecimal("10"))))
-                .consumedMaterials(List.of(new ProductionExecutionDTO.ConsumedMaterialInputDTO(1L, 5)))
-                .build();
+        @Test
+        @DisplayName("Should execute production")
+        void testExecute() throws Exception {
+                ProductionExecutionDTO execution = ProductionExecutionDTO.builder()
+                                .note("Test production")
+                                .producedProducts(List.of(new ProductionExecutionDTO.ProducedProductInputDTO(1L,
+                                                new BigDecimal("10"))))
+                                .consumedMaterials(List.of(new ProductionExecutionDTO.ConsumedMaterialInputDTO(1L, 5)))
+                                .build();
 
-        mockMvc.perform(post("/api/production/execute")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(execution)))
-                .andExpect(status().isOk());
+                mockMvc.perform(post("/api/production/execute")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(new ObjectMapper().writeValueAsString(execution)))
+                                .andExpect(status().isOk());
 
-        verify(productionService).executeProduction(any(ProductionExecutionDTO.class));
-    }
+                verify(productionService).executeProduction(any(ProductionExecutionDTO.class));
+        }
 }

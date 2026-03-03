@@ -15,6 +15,7 @@ public class RawMaterialPackagingDTO {
     private Long id;
     private String name;
     private Long rawMaterialId;
+    private String rawMaterialName;
     private BigDecimal quantityInside;
     private Integer currentStock;
 }

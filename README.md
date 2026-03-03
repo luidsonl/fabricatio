@@ -68,7 +68,7 @@ cd api
 ./mvnw spring-boot:run
 ```
 *   A API estará disponível em: `http://localhost:8080`
-*   Documentação Swagger: `http://localhost:8080/swagger-ui/index.html`
+*   Documentação Swagger: `http://localhost:8080/api/docs`
 
 ### 3. Executar o Frontend
 Em um novo terminal (na raiz do projeto):

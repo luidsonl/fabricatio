@@ -47,8 +47,19 @@ public class DatabaseSeeder implements CommandLineRunner {
                                 true);
                 RawMaterial oil = new RawMaterial(null, "RM006", "Vegetable Oil", "Soybean oil", MeasureUnitsType.LITER,
                                 new ArrayList<>(), true);
+                RawMaterial milk = new RawMaterial(null, "RM007", "Milk", "Whole milk", MeasureUnitsType.LITER,
+                                new ArrayList<>(), true);
+                RawMaterial eggs = new RawMaterial(null, "RM008", "Eggs", "Large chicken eggs", MeasureUnitsType.UNIT,
+                                new ArrayList<>(), true);
+                RawMaterial cocoaPowder = new RawMaterial(null, "RM009", "Cocoa Powder", "100% pure cocoa",
+                                MeasureUnitsType.KILOGRAM,
+                                new ArrayList<>(), true);
+                RawMaterial vanilla = new RawMaterial(null, "RM010", "Vanilla Extract", "Pure vanilla extract",
+                                MeasureUnitsType.LITER,
+                                new ArrayList<>(), true);
 
-                rawMaterialRepository.saveAll(Arrays.asList(wheatFlour, sugar, water, yeast, salt, oil));
+                rawMaterialRepository.saveAll(Arrays.asList(wheatFlour, sugar, water, yeast, salt, oil, milk, eggs,
+                                cocoaPowder, vanilla));
 
                 // Packagings
                 RawMaterialPackaging flourBag = new RawMaterialPackaging();
@@ -75,7 +86,44 @@ public class DatabaseSeeder implements CommandLineRunner {
                 saltPack.setQuantityInside(new BigDecimal("1.0000"));
                 saltPack.setCurrentStock(5);
 
-                rawMaterialPackagingRepository.saveAll(Arrays.asList(flourBag, sugarPack, oilBottle, saltPack));
+                RawMaterialPackaging milkCarton = new RawMaterialPackaging();
+                milkCarton.setName("1L Carton");
+                milkCarton.setRawMaterial(milk);
+                milkCarton.setQuantityInside(new BigDecimal("1.0000"));
+                milkCarton.setCurrentStock(24);
+
+                RawMaterialPackaging eggCarton = new RawMaterialPackaging();
+                eggCarton.setName("Dozen Carton");
+                eggCarton.setRawMaterial(eggs);
+                eggCarton.setQuantityInside(new BigDecimal("12.0000"));
+                eggCarton.setCurrentStock(30);
+
+                RawMaterialPackaging cocoaBox = new RawMaterialPackaging();
+                cocoaBox.setName("500g Box");
+                cocoaBox.setRawMaterial(cocoaPowder);
+                cocoaBox.setQuantityInside(new BigDecimal("0.5000"));
+                cocoaBox.setCurrentStock(10);
+
+                RawMaterialPackaging vanillaBottle = new RawMaterialPackaging();
+                vanillaBottle.setName("100ml Bottle");
+                vanillaBottle.setRawMaterial(vanilla);
+                vanillaBottle.setQuantityInside(new BigDecimal("0.1000"));
+                vanillaBottle.setCurrentStock(8);
+
+                RawMaterialPackaging waterBottle = new RawMaterialPackaging();
+                waterBottle.setName("20L Jug");
+                waterBottle.setRawMaterial(water);
+                waterBottle.setQuantityInside(new BigDecimal("20.0000"));
+                waterBottle.setCurrentStock(5);
+
+                RawMaterialPackaging yeastPack = new RawMaterialPackaging();
+                yeastPack.setName("500g Pack");
+                yeastPack.setRawMaterial(yeast);
+                yeastPack.setQuantityInside(new BigDecimal("500.00"));
+                yeastPack.setCurrentStock(20);
+
+                rawMaterialPackagingRepository.saveAll(Arrays.asList(flourBag, sugarPack, oilBottle, saltPack,
+                                milkCarton, eggCarton, cocoaBox, vanillaBottle, waterBottle, yeastPack));
 
                 // Initial Stock Transactions for Raw Materials
                 rawMaterialPackagingTransactionRepository.saveAll(Arrays.asList(
@@ -86,6 +134,27 @@ public class DatabaseSeeder implements CommandLineRunner {
                                                 null,
                                                 "Initial stock for development"),
                                 new RawMaterialPackagingTransaction(null, oilBottle, 15, TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, milkCarton, 24, TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, eggCarton, 30, TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, cocoaBox, 10, TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, vanillaBottle, 8,
+                                                TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, waterBottle, 5,
+                                                TransactionType.INVENTORY_IN,
+                                                null,
+                                                "Initial stock for development"),
+                                new RawMaterialPackagingTransaction(null, yeastPack, 20,
+                                                TransactionType.INVENTORY_IN,
                                                 null,
                                                 "Initial stock for development")));
 
@@ -111,7 +180,22 @@ public class DatabaseSeeder implements CommandLineRunner {
                 chocolateCookies.setFractionable(false);
                 chocolateCookies.setCurrentStock(new BigDecimal("20.0000"));
 
-                productRepository.saveAll(Arrays.asList(artisanBread, sweetCake, chocolateCookies));
+                Product chocolateCake = new Product();
+                chocolateCake.setCode("P004");
+                chocolateCake.setName("Gourmet Chocolate Cake");
+                chocolateCake.setPrice(new BigDecimal("45.00"));
+                chocolateCake.setFractionable(false);
+                chocolateCake.setCurrentStock(new BigDecimal("2.0000"));
+
+                Product vanillaCupcake = new Product();
+                vanillaCupcake.setCode("P005");
+                vanillaCupcake.setName("Vanilla Cupcake");
+                vanillaCupcake.setPrice(new BigDecimal("6.50"));
+                vanillaCupcake.setFractionable(false);
+                vanillaCupcake.setCurrentStock(new BigDecimal("15.0000"));
+
+                productRepository.saveAll(Arrays.asList(artisanBread, sweetCake, chocolateCookies, chocolateCake,
+                                vanillaCupcake));
 
                 // Product Transactions (Initial production logs)
                 productTransactionRepository.saveAll(Arrays.asList(
@@ -123,6 +207,12 @@ public class DatabaseSeeder implements CommandLineRunner {
                                                 TransactionType.INVENTORY_IN, null,
                                                 "Initial production log"),
                                 new ProductTransaction(null, chocolateCookies, new BigDecimal("20.0000"),
+                                                TransactionType.INVENTORY_IN,
+                                                null, "Initial production log"),
+                                new ProductTransaction(null, chocolateCake, new BigDecimal("2.0000"),
+                                                TransactionType.INVENTORY_IN,
+                                                null, "Initial production log"),
+                                new ProductTransaction(null, vanillaCupcake, new BigDecimal("15.0000"),
                                                 TransactionType.INVENTORY_IN,
                                                 null, "Initial production log")));
 
@@ -146,6 +236,26 @@ public class DatabaseSeeder implements CommandLineRunner {
                                 new ProductRawMaterial(null, chocolateCookies, wheatFlour, new BigDecimal("0.2000")),
                                 new ProductRawMaterial(null, chocolateCookies, sugar, new BigDecimal("0.1000")),
                                 new ProductRawMaterial(null, chocolateCookies, oil, new BigDecimal("0.0500"))));
+
+                // Chocolate Cake: 0.3kg flour, 0.2kg sugar, 0.1kg cocoa, 0.2L milk, 3 eggs,
+                // 0.1L oil
+                productRawMaterialRepository.saveAll(Arrays.asList(
+                                new ProductRawMaterial(null, chocolateCake, wheatFlour, new BigDecimal("0.3000")),
+                                new ProductRawMaterial(null, chocolateCake, sugar, new BigDecimal("0.2000")),
+                                new ProductRawMaterial(null, chocolateCake, cocoaPowder, new BigDecimal("0.1000")),
+                                new ProductRawMaterial(null, chocolateCake, milk, new BigDecimal("0.2000")),
+                                new ProductRawMaterial(null, chocolateCake, eggs, new BigDecimal("3.0000")),
+                                new ProductRawMaterial(null, chocolateCake, oil, new BigDecimal("0.1000"))));
+
+                // Vanilla Cupcake: 0.2kg flour, 0.1kg sugar, 2 eggs, 0.1L milk, 0.05L oil,
+                // 0.01L vanilla extract
+                productRawMaterialRepository.saveAll(Arrays.asList(
+                                new ProductRawMaterial(null, vanillaCupcake, wheatFlour, new BigDecimal("0.2000")),
+                                new ProductRawMaterial(null, vanillaCupcake, sugar, new BigDecimal("0.1000")),
+                                new ProductRawMaterial(null, vanillaCupcake, eggs, new BigDecimal("2.0000")),
+                                new ProductRawMaterial(null, vanillaCupcake, milk, new BigDecimal("0.1000")),
+                                new ProductRawMaterial(null, vanillaCupcake, oil, new BigDecimal("0.0500")),
+                                new ProductRawMaterial(null, vanillaCupcake, vanilla, new BigDecimal("0.0100"))));
 
                 System.out.println("Database seeded successfully with expanded development data!");
         }

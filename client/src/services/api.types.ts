@@ -51,6 +51,7 @@ export interface RawMaterialPackagingDTO {
     id?: number;
     name: string;
     rawMaterialId: number;
+    rawMaterialName?: string;
     quantityInside: number;
     currentStock: number;
 }

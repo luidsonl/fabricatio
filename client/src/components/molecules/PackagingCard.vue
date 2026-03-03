@@ -23,6 +23,10 @@ const handleDelete = () => {
     <div class="space-y-3">
       <div class="font-bold text-slate-900 border-b border-slate-100 pb-2 mb-2">{{ packaging.name }}</div>
       <div class="space-y-1">
+        <div class="text-sm text-slate-600 flex justify-between" v-if="packaging.rawMaterialName">
+          <span>Raw Material:</span>
+          <span class="font-medium text-slate-900">{{ packaging.rawMaterialName }}</span>
+        </div>
         <div class="text-sm text-slate-600 flex justify-between">
           <span>Quantity Inside:</span>
           <span class="font-medium text-slate-900">{{ packaging.quantityInside }}</span>
